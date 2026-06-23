@@ -4,6 +4,18 @@ import MaskedLines from '../MaskedLines/MaskedLines'
 
 const DESC_BASE_DELAY = 0.25
 const DESC_STEP = 0.12
+const DESC_LINE_COUNT = 3 // the description wraps to ~3 lines
+// The description reads as settled shortly after its last line begins, so anchor
+// the entries to that perceived finish rather than the full mask duration.
+const DESC_SETTLE = 0.2
+const DESC_REVEAL_END =
+  DESC_BASE_DELAY + (DESC_LINE_COUNT - 1) * DESC_STEP + DESC_SETTLE
+
+// Entries reveal in sequence: the first one starts CARD_GAP after the
+// description settles, then each following entry CARD_STEP later.
+const CARD_GAP = 0.3
+const CARD_STEP = 0.4
+const cardDelay = (i) => DESC_REVEAL_END + CARD_GAP + i * CARD_STEP
 
 // Matches the slow glide used by the Experience cards.
 const CARD_DURATION = 1.3
@@ -68,19 +80,15 @@ const BannerLeft = ({ edu }) => (
   </div>
 )
 
-// Each entry self-triggers on scroll and slides in from its side (same as Experience).
-const RevealItem = ({ direction, className = '', children }) => {
-  const [ref, inView] = useInView({ threshold: 0.25 })
-  return (
-    <div
-      ref={ref}
-      style={{ animationDuration: `${CARD_DURATION}s` }}
-      className={`${direction} ${inView ? 'is-inview' : ''} ${className}`}
-    >
-      {children}
-    </div>
-  )
-}
+// Slides in from its side once the section header is in view, after `delay`.
+const RevealItem = ({ direction, inView, delay, className = '', children }) => (
+  <div
+    style={{ animationDuration: `${CARD_DURATION}s`, animationDelay: `${delay}s` }}
+    className={`${direction} ${inView ? 'is-inview' : ''} ${className}`}
+  >
+    {children}
+  </div>
+)
 
 const Education = () => {
   const { education } = portfolio
@@ -88,10 +96,10 @@ const Education = () => {
 
   return (
     <section id="education" className="min-h-screen py-20 px-5 sm:px-16 flex items-center overflow-hidden">
-      <div ref={headerRef} className="max-w-5xl mx-auto flex flex-col gap-12 w-full">
+      <div className="max-w-5xl mx-auto flex flex-col gap-12 w-full">
 
         {/* Title */}
-        <div className="text-center">
+        <div ref={headerRef} className="text-center">
           <div className="reveal-mask">
             <div className={`reveal-up ${headerInView ? 'is-inview' : ''}`}>
               <p className="text-white/50 text-sm tracking-widest uppercase mb-2">Academic Path</p>
@@ -121,7 +129,7 @@ const Education = () => {
                   {/* Left slot */}
                   <div className="flex justify-end pr-6 pt-1">
                     {!isRight && (
-                      <RevealItem direction={eduDirection(i)}>
+                      <RevealItem direction={eduDirection(i)} inView={headerInView} delay={cardDelay(i)}>
                         <div className="flex items-start gap-4">
                           <div className="text-cyan-300 mt-1">{levelIcons[edu.level]}</div>
                           <BannerLeft edu={edu} />
@@ -138,7 +146,7 @@ const Education = () => {
                   {/* Right slot */}
                   <div className="pl-6 pt-1">
                     {isRight && (
-                      <RevealItem direction={eduDirection(i)}>
+                      <RevealItem direction={eduDirection(i)} inView={headerInView} delay={cardDelay(i)}>
                         <div className="flex items-start gap-4">
                           <BannerRight edu={edu} />
                           <div className="text-cyan-300 mt-1">{levelIcons[edu.level]}</div>
@@ -160,7 +168,7 @@ const Education = () => {
             {education.map((edu, i) => (
               <div key={i} className="relative">
                 <div className="absolute -left-[31px] top-0 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]" />
-                <RevealItem direction={eduDirection(i)}>
+                <RevealItem direction={eduDirection(i)} inView={headerInView} delay={cardDelay(i)}>
                   <div
                     className="inline-flex items-center px-4 py-2 mb-3 bg-cyan-500/80 text-white font-bold text-xs uppercase tracking-wide"
                     style={{ clipPath: 'polygon(20px 0, 100% 0, 100% 100%, 20px 100%, 0% 50%)' }}
