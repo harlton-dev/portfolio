@@ -1,0 +1,13 @@
+
+/components/Hero/Hero.css
+/* ── Right: photo ── */
+.hero__image-wrap {
+  flex: 0 0 380px;
+  height: 380px;
+  border-radius: 50%;
+  overflow: hidden;
+
+  //commented this line
+  /* background-color: #2a4fb4;
+  box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.4), 0 0 0 10px rgba(255, 255, 255, 0.2), 0 30px 80px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.5); */
+}

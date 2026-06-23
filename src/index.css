@@ -1,0 +1,193 @@
+@import '@fontsource/poppins/400.css';
+@import '@fontsource/poppins/500.css';
+@import '@fontsource/poppins/600.css';
+@import '@fontsource/poppins/700.css';
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'Poppins', sans-serif;
+    color: #111827;
+    background-color: #ffffff;
+  }
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #60a5fa 100%);
+}
+
+/* ── Hero text-mask reveal ── */
+@keyframes hero-reveal {
+  from { transform: translateY(110%); }
+  to   { transform: translateY(0); }
+}
+
+/* AOS-style "fade-up": rise from 100px below while fading in. */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translate3d(0, 100px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* AOS-style "fade-left": enter from the right, sliding left into place. */
+@keyframes fade-left {
+  from { opacity: 0; transform: translate3d(60px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* AOS-style "fade-right": enter from the left, sliding right into place. */
+@keyframes fade-right {
+  from { opacity: 0; transform: translate3d(-60px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* AOS-style "fade-up": rise from below while fading in (scroll-gated). */
+@keyframes fade-up {
+  from { opacity: 0; transform: translate3d(0, 60px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Modal entrance: the whole overlay fades in, the panel gently rises + scales. */
+@keyframes modal-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes modal-pop-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@layer components {
+  /* Clips the line so its inner content slides up from behind a hidden edge. */
+  .reveal-mask {
+    overflow: hidden;
+  }
+
+  /* Extra top room so the raised waving-hand isn't clipped at rest;
+     the negative margin keeps surrounding layout unchanged. */
+  .reveal-mask--head {
+    padding-top: 1.3rem;
+    margin-top: -1.3rem;
+  }
+
+  .reveal-line {
+    transform: translateY(110%);
+    animation: hero-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: transform;
+  }
+
+  /* AOS "fade-up" applied to an element on mount. */
+  .fade-up {
+    opacity: 0;
+    transform: translate3d(0, 100px, 0);
+    animation: hero-fade-up 1.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: opacity, transform;
+  }
+
+  /* Scroll-triggered reveals: hidden at rest, animate once `.is-inview` is added. */
+  .reveal-up {
+    transform: translateY(110%);
+    will-change: transform;
+  }
+  .reveal-up.is-inview {
+    animation: hero-reveal 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-left {
+    opacity: 0;
+    transform: translate3d(60px, 0, 0);
+    will-change: opacity, transform;
+  }
+  .reveal-left.is-inview {
+    animation: fade-left 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-right {
+    opacity: 0;
+    transform: translate3d(-60px, 0, 0);
+    will-change: opacity, transform;
+  }
+  .reveal-right.is-inview {
+    animation: fade-right 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .reveal-fade-up {
+    opacity: 0;
+    transform: translate3d(0, 60px, 0);
+    will-change: opacity, transform;
+  }
+  .reveal-fade-up.is-inview {
+    animation: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Modal entrance animations (run on mount). */
+  .modal-overlay {
+    animation: modal-fade-in 0.45s ease both;
+  }
+  .modal-panel {
+    animation: modal-pop-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-line,
+    .fade-up,
+    .reveal-up,
+    .reveal-left,
+    .reveal-right,
+    .reveal-fade-up,
+    .modal-overlay,
+    .modal-panel {
+      opacity: 1;
+      transform: none;
+      animation: none;
+    }
+  }
+
+  .hero__image-container {
+    position: relative;
+  }
+
+  .hero__image-wrap {
+    width: 100%;
+    height: 100%;
+    -webkit-mask-image: radial-gradient(
+      ellipse 80% 85% at 50% 38%,
+      black 35%,
+      transparent 72%
+    );
+    mask-image: radial-gradient(
+      ellipse 80% 85% at 50% 38%,
+      black 35%,
+      transparent 72%
+    );
+  }
+
+  .hero__photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: translateY(15%);
+    opacity: 0.85;
+  }
+
+  .themed-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(34, 211, 238, 0.35) transparent;
+  }
+
+  .themed-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .themed-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .themed-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(34, 211, 238, 0.35);
+    border-radius: 9999px;
+  }
+
+  .themed-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(34, 211, 238, 0.55);
+  }
+}
